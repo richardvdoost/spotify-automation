@@ -5,16 +5,29 @@ import subprocess
 import time
 
 PLAYLISTS = {
-    "chill": ("3yHsqOLOzoFEm60M99SWJv", "6tunhVGD8C05MZNjSVIsjw"),
-    "favorites": ("6ni68MkGnCQhyoJohHiuHC", "37BZB0z9T8Xu7U3e65qxFy"),
-    "sfw": ("5Sd3qK4AvwE0nQzcscMHMA", "5W3N9NkOl0tLaqi5LZbUOC"),
-    "old": ("2KGsnNbtbs4oTnVue3Cb4a", "0X3LTPRlsqs7rFZGVy6SSH"),
-    "bedtimes": ("64VdS4dsqof17W3L3gAbE1", "5xKw68A720RT2Q4XrsmMg2"),
+    "chill": "3yHsqOLOzoFEm60M99SWJv",
+    "favorites": "6ni68MkGnCQhyoJohHiuHC",
+    "sfw": "5Sd3qK4AvwE0nQzcscMHMA",
+    "old": "2KGsnNbtbs4oTnVue3Cb4a",
+    "country": "5armxQabx9PcgYB2KyZclh",
+    "techno": "61qO0IuYwm9Sa0oym5W0ik",
+    "rasta": "1CrztYhtvmsXyFbKFyHb3K",
+    "bedtimes": "64VdS4dsqof17W3L3gAbE1",
+    "latin": "7iC8QpZ6KgHLaryFDgGfGO",
+    "nl": "2bBpHaiDyPXdlhTTI5mJIH",
+    "croissant": "4gbhvNjMs77Ex9FZIuGP4u",
+    "tropic": "5CvYV8IMucPulbn82INrAU",
+    "broke": "5GN54Qe9X2gXhRa4LTXcnY",
 }
 
 MIN_VOLUME = 8
-PLAYLIST_INIT_VOLUME = 40
-PLAYLIST_FADE_IN = 30
+PLAYLIST_INIT_VOLUME = 25
+PLAYLIST_SWITCH_VOLUME = 30
+PLAYLIST_STARTING = 30
+PLAYLIST_SWITCH = (10, 20)
+DEFAULT_FADE = 6
+SLEEP_WAIT = 5
+SLEEP_FADE = 10
 
 
 def main():
@@ -37,19 +50,35 @@ def main():
 
     if args.command in COMMANDS:
         COMMANDS[args.command](args.parameters)
+
     elif args.command in PLAYLISTS:
         print(f"Start Playlist: {args.command}")
-        start_playlist(*PLAYLISTS[args.command])
+        start_playlist(PLAYLISTS[args.command], args.parameters)
 
 
-def start_playlist(playlist, track):
-    set_volume(PLAYLIST_INIT_VOLUME)
+def start_playlist(playlist, parameters):
 
-    osascript(
-        f'tell application "Spotify" to play track "spotify:track:{track}" in context "spotify:playlist:{playlist}"'
-    )
+    should_switch = is_playing()
 
-    fade_volume(100, PLAYLIST_FADE_IN)
+    if len(parameters) == 2:
+        fade_out = int(parameters[0])
+        fade_in = int(parameters[1])
+    elif len(parameters) == 1:
+        fade_out = PLAYLIST_SWITCH[0]
+        fade_in = int(parameters[0])
+    else:
+        fade_out = PLAYLIST_SWITCH[0]
+        fade_in = PLAYLIST_SWITCH[1] if should_switch else PLAYLIST_STARTING
+
+    if should_switch:
+        fade_volume(PLAYLIST_SWITCH_VOLUME, fade_out)
+    else:
+        set_volume(PLAYLIST_INIT_VOLUME)
+
+    osascript('tell application "Spotify" to set shuffling to true')
+    osascript(f'tell application "Spotify" to play track "spotify:playlist:{playlist}"')
+
+    fade_volume(100, fade_in)
 
 
 def play(parameters=None):
@@ -80,14 +109,15 @@ def volume(parameters):
 def fade(parameters):
     if len(parameters) == 2:
         target_volume = int(parameters[0])
-        duration = float(parameters[1]) * 60
+        duration = float(parameters[1])
 
     elif len(parameters) == 1:
         target_volume = int(parameters[0])
-        duration = 10
+        duration = DEFAULT_FADE
 
     else:
-        raise Exception("Fade needs two parameters: [target volume] [duration]")
+        print("Fade needs two parameters: [target volume] [duration]")
+        return
 
     print(
         f"Fading Spotify volume from {get_volume()} to {target_volume} in {duration:.0f} seconds"
@@ -116,7 +146,8 @@ def sleep(parameters):
         fade_time = float(parameters[0]) * 60
 
     else:
-        raise Exception(f"Sleep needs one or two parameters, got {len(parameters)}")
+        time.sleep(SLEEP_WAIT)
+        fade_time = SLEEP_FADE
 
     fade_volume(8, fade_time)
 
@@ -156,6 +187,10 @@ def fade_volume(target_volume, duration):
 
 def change_volume(delta):
     set_volume(get_volume() + delta)
+
+
+def is_playing():
+    return osascript('tell application "Spotify" to player state') == "playing"
 
 
 def get_volume():
