@@ -5,26 +5,32 @@ import subprocess
 import time
 
 PLAYLISTS = {
-    "chill": "3yHsqOLOzoFEm60M99SWJv",
-    "favorites": "6ni68MkGnCQhyoJohHiuHC",
-    "sfw": "5Sd3qK4AvwE0nQzcscMHMA",
-    "old": "2KGsnNbtbs4oTnVue3Cb4a",
-    "country": "5armxQabx9PcgYB2KyZclh",
-    "techno": "61qO0IuYwm9Sa0oym5W0ik",
-    "rasta": "1CrztYhtvmsXyFbKFyHb3K",
     "bedtimes": "64VdS4dsqof17W3L3gAbE1",
-    "latin": "7iC8QpZ6KgHLaryFDgGfGO",
-    "nl": "2bBpHaiDyPXdlhTTI5mJIH",
-    "croissant": "4gbhvNjMs77Ex9FZIuGP4u",
-    "tropic": "5CvYV8IMucPulbn82INrAU",
     "broke": "5GN54Qe9X2gXhRa4LTXcnY",
+    "chill": "3yHsqOLOzoFEm60M99SWJv",
+    "country": "5armxQabx9PcgYB2KyZclh",
+    "croissant": "4gbhvNjMs77Ex9FZIuGP4u",
+    "favorites": "6ni68MkGnCQhyoJohHiuHC",
+    "journal": "2hNvTwmTycXAhuYZtwqp57",
+    "latin": "7iC8QpZ6KgHLaryFDgGfGO",
+    "motivation": "7c3upnoRmYC4d2X03jwkXp",
+    "mythical": "1EttrSm3AKA8MpUqIN7RaT",
+    "nl": "2bBpHaiDyPXdlhTTI5mJIH",
+    "old": "2KGsnNbtbs4oTnVue3Cb4a",
+    "pasta": "6MZ0mFE5uVzUDgzZd0iPxh",
+    "popi": "6DFTGg4vxsnaGqDoBwO7XG",
+    "rasta": "1CrztYhtvmsXyFbKFyHb3K",
+    "sfw": "5Sd3qK4AvwE0nQzcscMHMA",
+    "techno": "61qO0IuYwm9Sa0oym5W0ik",
+    "tropic": "5CvYV8IMucPulbn82INrAU",
+    "wakey": "7eBXOXIHcWQUlDpnAbb4CD",
 }
 
 MIN_VOLUME = 8
-PLAYLIST_INIT_VOLUME = 0.25
-PLAYLIST_SWITCH_VOLUME = 0.3
+PLAYLIST_INIT_VOLUME = 0.15
+PLAYLIST_SWITCH_VOLUME = 0.2
 PLAYLIST_STARTING = 25
-PLAYLIST_SWITCH = (15, 15)
+PLAYLIST_SWITCH = (12, 12)
 DEFAULT_FADE = 5
 SLEEP_WAIT = 5
 SLEEP_FADE = 10
