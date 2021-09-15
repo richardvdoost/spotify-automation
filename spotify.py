@@ -21,11 +21,11 @@ PLAYLISTS = {
 }
 
 MIN_VOLUME = 8
-PLAYLIST_INIT_VOLUME = 25
-PLAYLIST_SWITCH_VOLUME = 30
-PLAYLIST_STARTING = 30
-PLAYLIST_SWITCH = (10, 20)
-DEFAULT_FADE = 6
+PLAYLIST_INIT_VOLUME = 0.25
+PLAYLIST_SWITCH_VOLUME = 0.3
+PLAYLIST_STARTING = 25
+PLAYLIST_SWITCH = (15, 15)
+DEFAULT_FADE = 5
 SLEEP_WAIT = 5
 SLEEP_FADE = 10
 
@@ -59,6 +59,7 @@ def main():
 def start_playlist(playlist, parameters):
 
     should_switch = is_playing()
+    end_volume = get_volume()
 
     if len(parameters) == 2:
         fade_out = int(parameters[0])
@@ -71,14 +72,17 @@ def start_playlist(playlist, parameters):
         fade_in = PLAYLIST_SWITCH[1] if should_switch else PLAYLIST_STARTING
 
     if should_switch:
-        fade_volume(PLAYLIST_SWITCH_VOLUME, fade_out)
+        fade_volume(
+            round(MIN_VOLUME + (end_volume - MIN_VOLUME) * PLAYLIST_SWITCH_VOLUME),
+            fade_out,
+        )
     else:
-        set_volume(PLAYLIST_INIT_VOLUME)
+        set_volume(round(MIN_VOLUME + (end_volume - MIN_VOLUME) * PLAYLIST_INIT_VOLUME))
 
     osascript('tell application "Spotify" to set shuffling to true')
     osascript(f'tell application "Spotify" to play track "spotify:playlist:{playlist}"')
 
-    fade_volume(100, fade_in)
+    fade_volume(end_volume, fade_in)
 
 
 def play(parameters=None):
@@ -98,7 +102,6 @@ def volume(parameters):
 
     if command[0] in ("+", "-"):
         delta = int(command)
-        print(f"Changing volume volume by {delta}")
         change_volume(delta)
         return
 
@@ -116,7 +119,9 @@ def fade(parameters):
         duration = DEFAULT_FADE
 
     else:
-        print("Fade needs two parameters: [target volume] [duration]")
+        print(
+            f"Fade receives two parameters: [target volume] [duration={DEFAULT_FADE}]"
+        )
         return
 
     print(
@@ -139,10 +144,8 @@ def sleep(parameters):
         fade_time = float(parameters[1]) * 60
 
         time.sleep(wait)
-        print("Starting volume fade")
 
     elif len(parameters) == 1:
-        print(f"Fading down volume in {parameters[0]} minutes.")
         fade_time = float(parameters[0]) * 60
 
     else:
@@ -160,6 +163,8 @@ def sleep(parameters):
 def fade_volume(target_volume, duration):
     start_volume = get_volume()
     volume_delta = int(abs(start_volume - target_volume))
+
+    print(f"Fading volume from {start_volume} to {target_volume} in {duration} seconds")
 
     if volume_delta == 0:
         return
@@ -183,9 +188,11 @@ def fade_volume(target_volume, duration):
         current_volume = level
         if current_volume == target_volume:
             break
+    print()
 
 
 def change_volume(delta):
+    print(f"Changing volume volume by {delta}")
     set_volume(get_volume() + delta)
 
 
@@ -198,6 +205,7 @@ def get_volume():
 
 
 def set_volume(level):
+    print(f"Setting volume to: {level}%  ", end="\r")
     level = max(0, min(level + 1, 100))
     osascript(f'tell application "Spotify" to set sound volume to {level}')
 
