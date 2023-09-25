@@ -63,7 +63,6 @@ def main():
 
 
 def start_playlist(playlist, parameters):
-
     should_switch = is_playing()
     end_volume = get_volume()
 
@@ -131,7 +130,8 @@ def fade(parameters):
         return
 
     print(
-        f"Fading Spotify volume from {get_volume()} to {target_volume} in {duration:.0f} seconds"
+        f"Fading Spotify volume from {get_volume()} to {target_volume} in"
+        f" {duration:.0f} seconds"
     )
 
     fade_volume(target_volume, duration)
@@ -144,7 +144,8 @@ def sleep(parameters):
 
     if len(parameters) == 2:
         print(
-            f"Waiting {parameters[0]} minutes, then fading down volume in {parameters[1]} minutes."
+            f"Waiting {parameters[0]} minutes, then fading down volume in"
+            f" {parameters[1]} minutes."
         )
         wait = float(parameters[0]) * 60
         fade_time = float(parameters[1]) * 60
