@@ -33,7 +33,7 @@ PLAYLIST_STARTING = 25
 PLAYLIST_SWITCH = (12, 12)
 DEFAULT_FADE = 5
 SLEEP_WAIT = 5
-SLEEP_FADE = 10
+SLEEP_FADE = 15
 
 
 def main():
@@ -43,6 +43,7 @@ def main():
         "volume": volume,
         "fade": fade,
         "sleep": sleep,
+        "wake": wake,
     }
 
     choices = list(COMMANDS.keys()) + list(PLAYLISTS.keys())
@@ -163,6 +164,36 @@ def sleep(parameters):
 
     pause()
     set_volume(orig_volume)
+
+    print("Done")
+
+
+def wake(parameters):
+    print("Spotify Wake")
+
+    target_volume = max(75, get_volume())
+
+    if len(parameters) == 2:
+        print(
+            f"Waiting {parameters[0]} minutes, then fading down volume in"
+            f" {parameters[1]} minutes."
+        )
+        wait = float(parameters[0]) * 60
+        fade_time = float(parameters[1]) * 60
+
+        time.sleep(wait)
+
+    elif len(parameters) == 1:
+        fade_time = float(parameters[0]) * 60
+
+    else:
+        time.sleep(SLEEP_WAIT)
+        fade_time = SLEEP_FADE
+
+    pause()
+    set_volume(8)
+    play()
+    fade_volume(target_volume, fade_time)
 
     print("Done")
 
