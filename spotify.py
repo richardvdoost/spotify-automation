@@ -13,6 +13,8 @@ PLAYLISTS = {
     "favorites": "6ni68MkGnCQhyoJohHiuHC",
     "journal": "2hNvTwmTycXAhuYZtwqp57",
     "latin": "7iC8QpZ6KgHLaryFDgGfGO",
+    "lofi": "37i9dQZF1DWWQRwui0ExPn",
+    "lounge": "0gxJozy2nEfFdRoVgXtW1N",
     "motivation": "7c3upnoRmYC4d2X03jwkXp",
     "mythical": "1EttrSm3AKA8MpUqIN7RaT",
     "nl": "2bBpHaiDyPXdlhTTI5mJIH",
